@@ -35,7 +35,11 @@ GenFilesMCP is a Model Context Protocol (MCP) server that generates PowerPoint, 
 
 ## Status
 
-This release is **v0.2.1**. It introduces a new environment variable `ENABLE_CREATE_KNOWLEDGE` that lets deployments choose whether generated or reviewed files are automatically added to users' knowledge collections. This enables coexistence between RAG-preserving deployments (do not enable knowledge creation) and deployments that want generated files saved to knowledge collections (requires enabling the Open Web UI document option `Bypass Embedding and Retrieval`). The original behavior (downloading files from chats) remains unchanged for end users.
+This release is **v0.2.2**. It includes a fix derived from [Open Web UI Discussion #15192](https://github.com/open-webui/open-webui/discussions/15192) to prevent errors when uploading files to knowledge collections. This ensures that users who want to save documents generated or reviewed by their LLM using GenFilesMCP can use the parameter `ENABLE_CREATE_KNOWLEDGE=true` without losing the possibility of using RAG.
+
+The `ENABLE_CREATE_KNOWLEDGE` variable lets deployments choose whether generated or reviewed files are automatically added to users' knowledge collections. The original behavior (downloading files from chats) remains unchanged for end users.
+
+> **Note:** If you encounter any errors, please create an issue so we can review it. In the meantime, you can set `ENABLE_CREATE_KNOWLEDGE=false`; this will not affect the file generation or review capabilities.
 
 ## Prerequisites
 
@@ -50,7 +54,7 @@ This release is **v0.2.1**. It introduces a new environment variable `ENABLE_CRE
 Pull the pre-built Docker image from GitHub Container Registry:
 
 ```bash
-docker pull ghcr.io/baronco/genfilesmcp:v0.2.1
+docker pull ghcr.io/baronco/genfilesmcp:v0.2.2
 ```
 
 Run the container:
@@ -61,7 +65,7 @@ docker run -d --restart unless-stopped -p YOUR_PORT:YOUR_PORT \
   -e PORT=YOUR_PORT \
   -e ENABLE_CREATE_KNOWLEDGE=false \
   --name gen_files_mcp \
-  ghcr.io/baronco/genfilesmcp:v0.2.1
+  ghcr.io/baronco/genfilesmcp:v0.2.2
 ```
 
 Alternatively, use the `:latest` tag for the most recent version:
@@ -176,6 +180,8 @@ When using docker-compose set URL to "http://genfilesmcp:8015/mcp"
   ![MCP Configuration](img/mcp.png)
 
 </div>
+
+**Note for Open Web UI v0.6.40+:** The latest version introduces a "Function Name Filter List" field in the connection settings which may not function correctly. A known workaround is to add a comma `,` in that field. See [Issue #19486](https://github.com/open-webui/open-webui/issues/19486) for details.
 
 > Once Tools are enabled for your model, Open WebUI gives you two different ways to let your LLM use them in conversations. You can decide how the model should call Tools by choosing between: `Default Mode (Prompt-based)` or `Native Mode (Built-in function calling)`, check the documentation for more details: [OWUI Tools](https://docs.openwebui.com/features/plugin/tools/)
 
@@ -298,7 +304,44 @@ For optimal results, create a custom agent in Open Web UI:
 
 > This file was generated using the GenFiles MCP server and GPT-5 mini
 
-### Example 2: Reviewing a DOCX file with comments
+### Example 2: Generating a XLSX file
+
+
+<div style="text-align: center;">
+
+  ![Generating XLSX Example 1](img/excel1.png)
+
+</div>
+
+Open the generated file in Excel:
+
+<div style="text-align: center;">
+
+  ![Generating XLSX Example 2](img/excel2.png)
+
+</div>
+
+### Example 3: Generating a PPTX file
+
+In this example, it was used a MCP server to web research and GenFilesMCP to generate a PowerPoint presentation:
+
+<div style="text-align: center;">
+
+  ![Generating PPTX Example 1](img/powerpoint1.png)
+
+</div>
+
+Open the generated file in PowerPoint:
+
+<div style="text-align: center;">
+
+  ![Generating PPTX Example 2](img/powerpoint2.png)
+
+</div>
+
+> **Example files**: You can find the prompt and generated result in the `example` folder: `Cartagena_Temperature_Timeseries.xlsx`
+
+### Example 4: Reviewing a DOCX file with comments
 
 The review feature allows the agent to analyze uploaded documents and add structured comments for improvements.
 
@@ -344,3 +387,7 @@ The review feature allows the agent to analyze uploaded documents and add struct
 ## Star History
 
 [![Star History Chart](https://api.star-history.com/svg?repos=Baronco/GenFilesMCP&type=date&legend=top-left)](https://www.star-history.com/#Baronco/GenFilesMCP&type=date&legend=top-left)
+
+## License
+
+This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md) file for details.
