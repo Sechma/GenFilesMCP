@@ -7,7 +7,8 @@ Centralized descriptions for tool arguments.
 ARGUMENT_DESCRIPTIONS = {
     "common_args": {
         "file_name": "Desired name for the generated file without the extension.",
-        "python_script": "Complete Python script that generates the PowerPoint presentation using the provided template."
+        "python_script": "Complete Python script that generates the PowerPoint presentation using the provided template.",
+        "images_list": "List of images file id to be included in the docx file (e.g., ['img1_id', 'img2_id'])."
     },
     "full_context_docx": {
         "file_id": "ID of the existing docx file to analyze (from a previous chat upload).",

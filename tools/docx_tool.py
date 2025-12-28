@@ -65,7 +65,7 @@ def full_context_docx(file_id, file_name, ctx, URL):
         return dumps({"error": {"message": str(e)}}, indent=4, ensure_ascii=False)
 
 
-def generate_word(python_script, file_name, ctx, URL, ENABLE_CREATE_KNOWLEDGE):
+def generate_word(python_script, file_name, images_list, ctx, URL, ENABLE_CREATE_KNOWLEDGE):
     """
     Generate a Word document using an AI-generated Python script.
 
@@ -73,9 +73,48 @@ def generate_word(python_script, file_name, ctx, URL, ENABLE_CREATE_KNOWLEDGE):
         dict: Contains 'file_path_download' with a markdown hyperlink for downloading the generated Word file.
     """
     try:
+        images = [] # to save bytesIO images
+
+        if len(images_list) > 0:
+            logger.info(f"Received {len(images_list)} images for DOCX generation.")
+
+        # download images
+        for idx, image in enumerate(images_list):
+            image_file = download_file(URL, _get_bearer_token(ctx), image)
+            if isinstance(image_file, dict) and "error" in image_file:
+                return {"error": {"message": f"Error downloading image with ID {image}: {image_file['error']['message']}"}}
+            images.append(image_file)
+        
+        
+
+        # Download images list of BytesIO
+        # images = []
+
+        # # Solo aceptar lista de ImagesList (modelo Pydantic)
+        # image_ids = []
+        # logger.info(f"images_list type: {type(images_list)}, value: {images_list}")
+        # if isinstance(images_list, list) and images_list:
+        #     for idx, item in enumerate(images_list):
+        #         logger.info(f"images_list[{idx}] type: {type(item)}, value: {item}")
+        #         # Debe ser instancia de ImagesList y tener atributo images como str
+        #         if hasattr(item, 'images') and isinstance(item.images, str):
+        #             image_ids.append(item.images)
+        #         else:
+        #             logger.warning(f"images_list[{idx}] no es ImagesList o no tiene atributo images como str")
+        # if image_ids:
+        #     for image_id in image_ids:
+        #         image_file = download_file(URL, _get_bearer_token(ctx), image_id)
+        #         if isinstance(image_file, dict) and "error" in image_file:
+        #             return {"error": {"message": f"Error downloading image with ID {image_id}: {image_file['error']['message']}"}}
+        #         images.append(image_file)
+        #     logger.info(f"Downloaded {len(images)} images for DOCX generation.")
+        # else:
+        #     logger.error("images_list is not a list of ImagesList or contains no images. No images will be included in the DOCX generation.")
+
+        # Prepare the execution context with images
         buffer = BytesIO()
         buffer.name = f'{file_name}.docx'
-        context = {"docx_buffer": buffer}
+        context = {"docx_buffer": buffer, "images": images}
         try:
             exec(python_script, context)
         except Exception as exec_e:

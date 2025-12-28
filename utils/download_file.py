@@ -27,4 +27,4 @@ def download_file(url: str, token: str, file_id: str) -> BytesIO:
     if response.status_code != 200:
        return {"error":{"message": f'Error downloading the file: {response.status_code}'}}
     else:
-        return BytesIO(response._content)
+        return BytesIO(response._content) 

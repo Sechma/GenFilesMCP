@@ -35,7 +35,7 @@ GenFilesMCP is a Model Context Protocol (MCP) server that generates PowerPoint, 
 
 ## Status
 
-This release is **v0.3.0-alpha.1**. It includes a fix derived from [Open Web UI Discussion #15192](https://github.com/open-webui/open-webui/discussions/15192) to prevent errors when uploading files to knowledge collections. This ensures that users who want to save documents generated or reviewed by their LLM using GenFilesMCP can use the parameter `ENABLE_CREATE_KNOWLEDGE=true` without losing the possibility of using RAG. **Important compatibility note:** this alpha requires **Open Web UI v0.6.42 or later** (the knowledge API changed to a paginated `/api/v1/knowledge/search` endpoint). For Open Web UI versions earlier than v0.6.42, use GenFilesMCP releases **<= 0.2.2**.
+This release is **v0.3.0-alpha.2**. It includes a fix derived from [Open Web UI Discussion #15192](https://github.com/open-webui/open-webui/discussions/15192) to prevent errors when uploading files to knowledge collections. This ensures that users who want to save documents generated or reviewed by their LLM using GenFilesMCP can use the parameter `ENABLE_CREATE_KNOWLEDGE=true` without losing the possibility of using RAG. **Important compatibility note:** this alpha requires **Open Web UI v0.6.42 or later** (the knowledge API changed to a paginated `/api/v1/knowledge/search` endpoint). For Open Web UI versions earlier than v0.6.42, use GenFilesMCP releases **<= 0.2.2**.
 
 The `ENABLE_CREATE_KNOWLEDGE` variable lets deployments choose whether generated or reviewed files are automatically added to users' knowledge collections. The original behavior (downloading files from chats) remains unchanged for end users.
 
@@ -54,7 +54,7 @@ The `ENABLE_CREATE_KNOWLEDGE` variable lets deployments choose whether generated
 Pull the pre-built Docker image from GitHub Container Registry:
 
 ```bash
-docker pull ghcr.io/baronco/genfilesmcp:v0.3.0-alpha.1
+docker pull ghcr.io/baronco/genfilesmcp:v0.3.0-alpha.2
 ```
 
 Run the container:
@@ -65,7 +65,7 @@ docker run -d --restart unless-stopped -p YOUR_PORT:YOUR_PORT \
   -e PORT=YOUR_PORT \
   -e ENABLE_CREATE_KNOWLEDGE=false \
   --name gen_files_mcp \
-  ghcr.io/baronco/genfilesmcp:v0.3.0-alpha.1
+  ghcr.io/baronco/genfilesmcp:v0.3.0-alpha.2
 ```
 
 Alternatively, use the `:latest` tag for the most recent version:
@@ -242,20 +242,41 @@ class Tools:
 
     # Add your custom tools using pure Python code here, make sure to add type hints and descriptions
 
-    def chat_context(self, __files__: dict = {}) -> dict:
+    def chat_context(self, __files__: dict = {}, __metadata__: dict = {}) -> dict:
         """
         Get files metadata and get the user Email and user ID from the user object.
         """
+        print(f"__metadata__ \n\n{__metadata__}")
         # id and name of current files
-        chat_context = {"files": []}
+        chat_context = {"files": [], "attached_images": []}
 
         # files metadata
         if __files__:
             for f in __files__:
                 chat_context["files"].append({"id": f["id"], "name": f["name"]})
-            return chat_context
-        else:
-            return chat_context
+        #     return chat_context
+        # else:
+        #     return chat_context
+
+        # imgs in messages
+        parent = __metadata__.get("parent_message", {})
+        files = parent.get("files", [])
+
+        for f in files:
+            content_type = f.get("content_type", "")
+            file_id = f.get("id")
+            filename = f.get("name")
+
+            if content_type.startswith("image/"):
+                chat_context["attached_images"].append(
+                    {
+                        "img_id": file_id,
+                        "file_name": filename,
+                        # "content_type": content_type
+                    }
+                )
+
+        return chat_context
 ```
 
 3. Save the tool as `chat_context`
@@ -407,7 +428,35 @@ The review feature allows the agent to analyze uploaded documents and add struct
 
 > The review functionality preserves the original formatting while adding structured comments
 
-## Star History
+### Example 5: Generating a DOCX file with embedded images
+
+GenFilesMCP now supports embedding images directly into generated Word documents. Images can be included from the chat context, allowing for rich, visual content in docx files. `chat_context` now retrieves image metadata from chat messages, enabling the MCP server to access and embed these images in the generated documents.
+
+In this example, using gpt-5.2, the GenFiles assistant generated a Word document about Gradient Descent using a markdown that originally contained spanish text and images. User had to upload the images and the .md file to the chat, and then request the generation of a Word document with the images embedded:
+
+<div style="text-align: center;">
+
+  ![Images in DOCX](img/imgs_in_docx.png)
+
+</div>
+
+**Workflow:**
+1. User uploads images and a markdown file to the chat
+2. User requests the generation of a Word document with embedded images
+3. Agent calls the `chat_context` tool to retrieve image metadata from the chat
+4. Agent uses the `generate_docx_with_images` MCP function to create the Word document with embedded images
+
+**Result:**
+
+<div style="text-align: center;">
+
+  ![DOCX with Images Example](img/docx-2397.GIF)
+
+</div>
+
+> **Example files**: You can find the original result in the `example` folder of the repository: `Gradient_Descent_EN.docx`
+
+> This only works with vision-capable models.
 
 [![Star History Chart](https://api.star-history.com/svg?repos=Baronco/GenFilesMCP&type=date&legend=top-left)](https://www.star-history.com/#Baronco/GenFilesMCP&type=date&legend=top-left)
 

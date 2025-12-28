@@ -55,6 +55,9 @@ class ReviewComment(BaseModel):
     index: int
     comment: str
 
+class ImagesList(BaseModel):
+    images: str
+
 # Initialize FastMCP server
 mcp = FastMCP(
     name = "GenFilesMCP",
@@ -105,11 +108,12 @@ async def generate_excel(
 async def generate_word(
     ctx: Context[ServerSession, None],
     python_script: Annotated[str, Field(description=ARGUMENT_DESCRIPTIONS["common_args"]["python_script"])],
-    file_name: Annotated[str, Field(description=ARGUMENT_DESCRIPTIONS["common_args"]["file_name"])]):
+    file_name: Annotated[str, Field(description=ARGUMENT_DESCRIPTIONS["common_args"]["file_name"])],
+    images_list: Annotated[List[str], Field(description=ARGUMENT_DESCRIPTIONS["common_args"]["images_list"])] = []):
     """
-    Generate a Word document using the provided AI-generated Python script.
+    Generate a Word document using the provided AI-generated Python script. The images_list argument provides a list of image file IDs to be included in the document.
     """
-    return _generate_word(python_script, file_name, ctx, URL, ENABLE_CREATE_KNOWLEDGE)
+    return _generate_word(python_script, file_name, images_list, ctx, URL, ENABLE_CREATE_KNOWLEDGE)
 
 # Mcp tool definitions
 @mcp.tool(
