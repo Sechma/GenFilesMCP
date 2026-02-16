@@ -338,27 +338,55 @@ Criteria (brief):
 
 ##### Models that support images
 
-| Model | C1 | C2 | C3 | C4 | C5 | Total | Stars |
-|---|---:|---:|---:|---:|---:|---:|---|
-| GPT 4.1 mini | 0 | 1 | 0.5 | 0.5 | 1 | 3.0 | ★★★☆☆ |
-| GPT 5.1 mini | 0.5 | 0.5 | 1 | 0.5 | 1 | 3.5 | ★★★⯪☆ |
-| GPT 5.1 Codex mini | 0.5 | 1 | 0.5 | 1 | 1 | 4.0 | ★★★★☆ |
-| GPT 5.2 | 1 | 1 | 0.5 | 1 | 1 | 4.5 | ★★★★⯪ |
-| Claude 3 Haiku | 0 | 1 | 0.5 | 0.5 | 1 | 3.0 | ★★★☆☆ |
-| Claude Haiku 4.5 | 1 | 1 | 1 | 1 | 1 | 5.0 | ★★★★★ |
-| Google Gemini 3 Flash Preview | 0.5 | 1 | 1 | 1 | 0 | 3.5 | ★★★⯪☆ |
-| Gemini 3 Pro Preview | 0 | 0 | 0 | 0 | 0 | 0.0 | ☆☆☆☆☆ |
-| Grok Code 4.1 Fast | 1 | 1 | 0.5 | 0.5 | 1 | 4.0 | ★★★★☆ |
-| Kimi K2.5 | 1 | 1 | 1 | 1 | 1 | 5.0 | ★★★★★ |
-| Mistral 14B 2512 | 0 | 0 | 0 | 0 | 0 | 0.0 | ☆☆☆☆☆ |
-| Qwen3 VL 8B Thinking | 0.5 | 0.5 | 1 | 0 | 1 | 3.0 | ★★★☆☆ |
+<table align="center">
+  <thead>
+    <tr>
+      <th>Model</th>
+      <th>C1</th>
+      <th>C2</th>
+      <th>C3</th>
+      <th>C4</th>
+      <th>C5</th>
+      <th>Total</th>
+      <th>Stars</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr><td>GPT 4.1 mini</td><td>0</td><td>1</td><td>0.5</td><td>0.5</td><td>1</td><td>3.0</td><td>★★★☆☆</td></tr>
+    <tr><td>GPT 5.1 mini</td><td>0.5</td><td>0.5</td><td>1</td><td>0.5</td><td>1</td><td>3.5</td><td>★★★⯪☆</td></tr>
+    <tr><td>GPT 5.1 Codex mini</td><td>0.5</td><td>1</td><td>0.5</td><td>1</td><td>1</td><td>4.0</td><td>★★★★☆</td></tr>
+    <tr><td>GPT 5.2</td><td>1</td><td>1</td><td>0.5</td><td>1</td><td>1</td><td>4.5</td><td>★★★★⯪</td></tr>
+    <tr><td>Claude 3 Haiku</td><td>0</td><td>1</td><td>0.5</td><td>0.5</td><td>1</td><td>3.0</td><td>★★★☆☆</td></tr>
+    <tr><td>Claude Haiku 4.5</td><td>1</td><td>1</td><td>1</td><td>1</td><td>1</td><td>5.0</td><td>★★★★★</td></tr>
+    <tr><td>Google Gemini 3 Flash Preview</td><td>0.5</td><td>1</td><td>1</td><td>1</td><td>0</td><td>3.5</td><td>★★★⯪☆</td></tr>
+    <tr><td>Gemini 3 Pro Preview</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0.0</td><td>☆☆☆☆☆</td></tr>
+    <tr><td>Grok Code 4.1 Fast</td><td>1</td><td>1</td><td>0.5</td><td>0.5</td><td>1</td><td>4.0</td><td>★★★★☆</td></tr>
+    <tr><td>Kimi K2.5</td><td>1</td><td>1</td><td>1</td><td>1</td><td>1</td><td>5.0</td><td>★★★★★</td></tr>
+    <tr><td>Mistral 14B 2512</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0.0</td><td>☆☆☆☆☆</td></tr>
+    <tr><td>Qwen3 VL 8B Thinking</td><td>0.5</td><td>0.5</td><td>1</td><td>0</td><td>1</td><td>3.0</td><td>★★★☆☆</td></tr>
+  </tbody>
+</table>
 
 ##### Models that do not support images
 
-| Model | C1 | C2 | C3 | C4 | C5 | Total | Stars |
-|---|---:|---:|---:|---:|---:|---:|---|
-| Grok Code Fast 1 | N/A | 1 | 1 | 1 | 1 | 4.0 | ★★★★☆ |
-| DeepSeek V3.1 Terminus | N/A | 1 | 1 | 1 | 1 | 4.0 | ★★★★☆ |
+<table align="center">
+  <thead>
+    <tr>
+      <th>Model</th>
+      <th>C1</th>
+      <th>C2</th>
+      <th>C3</th>
+      <th>C4</th>
+      <th>C5</th>
+      <th>Total</th>
+      <th>Stars</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr><td>Grok Code Fast 1</td><td>N/A</td><td>1</td><td>1</td><td>1</td><td>1</td><td>4.0</td><td>★★★★☆</td></tr>
+    <tr><td>DeepSeek V3.1 Terminus</td><td>N/A</td><td>1</td><td>1</td><td>1</td><td>1</td><td>4.0</td><td>★★★★☆</td></tr>
+  </tbody>
+</table>
 
 
 - 🏆 **Best overall**: Claude Haiku 4.5 and Kimi K2.5 (5.0/5).
