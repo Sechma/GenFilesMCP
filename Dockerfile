@@ -6,7 +6,9 @@ COPY --from=ghcr.io/astral-sh/uv:0.7.14 /uv /uvx /bin/
 
 # Install system dependencies including pandoc
 RUN apt-get update && apt-get install -y \
-    pandoc \
+    libreoffice \
+    libreoffice-writer \
+    --no-install-recommends \
     && rm -rf /var/lib/apt/lists/*
 
 # Set the working directory inside the container

@@ -1,40 +1,27 @@
-This tool generates a Word document for reports or academic papers.
+This tool is designed to generate Word documents for reports or academic papers. The input required is a JSON object structured as follows:
 
-### Current input model (must follow exactly)
+- `document_cover`: Metadata for the cover page, including the following fields:
+  - `title`: The title of the document.
+  - `subtitle`: An optional subtitle for additional context.
+  - `description`: A brief description of the document's purpose.
+  - `author`: The author's name.
+  - `month`: The month of publication (e.g., "January").
+  - `year`: The year of publication (e.g., "2024").
+  - `page_break`: A boolean indicating whether to start the body content on a new page.
+- `columns_body`: Specifies the number of columns in the document body. Acceptable values are `1` or `2`.
+- `document_elements`: An ordered list of elements that make up the document body.
+- `file_name`: The name of the output file (without the file extension).
 
-Send a single request body with:
+### Guidelines for Document Elements:
 
-- `document_cover`: cover metadata (`title`, `subtitle`, `description`, `author`, `month`, `year`, `page_break`).
-- `columns_body`: number of columns in body (`1` or `2`).
-- `document_elements`: ordered list of body elements.
-- `file_name`: output file name (without extension).
+Each element in the `document_elements` list must include a `type` field with one of the following values:
 
-### Element contract
+- `ParagraphBody`: Used for regular paragraphs. **Do not use this type for headers, lists, tables, images, or equations**, as the backend will fail to generate the document.
+- `ParagraphHeader`: Used for section headers.
+- `ParagraphListItem`: Used for list items. Note that list items do **not support Markdown formatting** for bold or italic text. Do not use this type for equations.
+- `Table`: Used for tables.
+- `Image`: Used for images.
+- `Equation`: Used for equations.
 
-Each item in `document_elements` must:
-
-1. Include `type` with exactly one value from:
-	- `ParagraphBody`
-	- `ParagraphHeader`
-	- `ParagraphListItem`
-	- `Table`
-	- `Image`
-	- `Equation`
-2. Populate only the matching nested field:
-	- `type=ParagraphBody` -> use `paragraph`
-	- `type=ParagraphHeader` -> use `header`
-	- `type=ParagraphListItem` -> use `list_item`
-	- `type=Table` -> use `table`
-	- `type=Image` -> use `image`
-	- `type=Equation` -> use `equation`
-3. Leave all non-matching nested fields as `null` or omitted.
-
-### Content requirements
-
-- Paragraph text can use Markdown emphasis: `**bold**`, `*italic*`.
-- Keep paragraphs concise (prefer up to 4 lines).
-- Use `\n` for line breaks inside a paragraph and `\n\n` to separate paragraphs.
-- Captions are required for `Table`, `Image`, and `Equation`.
-- For lists, `list_style` must be `List Number` or `List Bullet`.
-- Use Unicode characters directly (for example `∑`, not `\\u2211`).
+The final goal of this tool is to create a well-structured Word document, prioritizing the selection of the best logical order for the document and the correct element types so that the user can obtain a professionally formatted document that is easy to read and ready to be shared or published.
 

@@ -1,4 +1,3 @@
-
 import json
 from pydantic import BaseModel
 from typing import List, Literal, Optional, get_args, get_origin
@@ -26,39 +25,37 @@ class Cover(BaseModel):
     page_break: bool = Field(..., description="Set true to start body content on a new page after the cover; false to continue immediately.")
 
 class ParagraphListItem(BaseModel):
-    #type: Literal["ParagraphListItem"] = Field(..., description="Discriminator for the list item element.")
-    list_style: Literal['List Number', 'List Bullet'] = Field(..., description="Required. Allowed values: 'List Number' | 'List Bullet'.")
-    items: List[str] = Field(..., description="List entries. Provide 1+ non-empty strings, each one a separate item.")
-    #index_element: int = Field(..., description="Unique index across all document elements for global ordering in the document. Values must be unique integers starting from 1 or higher, and do not need to be consecutive.")
-
+    list_style: Literal['List Number', 'List Bullet'] = Field(..., description="When adding a list to a docx document, choose either 'List Number' or 'List Bullet' based on the desired formatting style.")
+    items: List[str] = Field(..., description="List entries must include one or more non-empty strings, with each string representing a separate item. This type does not support Markdown formatting for bold or italic text. Do not use this type for equations; use the 'Equation' type instead to ensure proper formatting.")
+   
 class Table(BaseModel):
-    #type: Literal["Table"] = Field(..., description="Discriminator for the table element.")
     table_headers: List[str] = Field(..., description="Column headers in display order.")
     table_rows: List[List[str]] = Field(..., description="Table rows. Each row must match the number of headers.")
-    caption: str = Field(..., description="Required table caption shown under/near the table.")
-    #index_element: int = Field(..., description="Unique index across all document elements for global ordering in the document. Values must be unique integers starting from 1 or higher, and do not need to be consecutive.")
+    caption: str = Field(..., description="Caption for the table. Captions should be brief and concise. For example: 'Table 1: Summary of experimental results.'")
 
 class Image(BaseModel):
-    #type: Literal["Image"] = Field(..., description="Discriminator for the image element.")
-    id: str = Field(..., description="Required image file id from the file storage system.")
-    caption: str = Field(...,description="Required figure caption. Keep it short and descriptive.")
-    #index_element: int = Field(..., description="Unique index across all document elements for global ordering in the document. Values must be unique integers starting from 1 or higher, and do not need to be consecutive.")
-
+    id: str = Field(..., description="Unique file ID of the image. Use the `chat_context` tool to retrieve the IDs of images uploaded in the conversation chat. This allows the backend to download the image and include it in the document. Do not modify the ID format, as it must remain a unique string that identifies the uploaded image.")
+    caption: str = Field(..., description="Caption for the image. Captions should be brief and concise. For example: 'Figure 1: Diagram of the experimental setup.'")
+    
 class Equation(BaseModel):
-    #type: Literal["Equation"] = Field(..., description="Discriminator for the equation element.")
-    latex: str = Field(..., description="Required LaTeX expression, for example: E=mc^2.")
-    caption: str = Field(..., description="Required equation caption.")
-    #index_element: int = Field(..., description="Unique index across all document elements for global ordering in the document. Values must be unique integers starting from 1 or higher, and do not need to be consecutive.")
-
+    latex: str = Field(..., description="Required LaTeX expression, for example: E = mc^{2}")
+    caption: str = Field(..., description="Caption for the equation. Captions should be brief and concise. For example: 'Equation 1: Einstein's mass-energy equivalence.'")
+    
 class ParagraphHeader(BaseModel):
-    #type: Literal["ParagraphHeader"] = Field(..., description="Discriminator for the header element.")
-    text: str = Field(..., description="Heading text in plain language.")
+    text: str = Field(..., description="Heading text in plain language. Markdown formatting is not allowed")
     level: Literal[1,2,3,4,5,6] = Field(..., description="Heading level from 1 (main section) to 6 (minor subsection).")
-    #index_element: int = Field(..., description="Unique index across all document elements for global ordering in the document. Values must be unique integers starting from 1 or higher, and do not need to be consecutive.")
-
+    
 class ParagraphBody(BaseModel):
-    #type: Literal["ParagraphBody"] = Field(..., description="Discriminator for the paragraph element.")
-    text: str = Field(..., description="Paragraph content. Markdown emphasis is allowed: **bold** and *italic*.")
+    text: str = Field(
+        ..., 
+        description=(
+            "Paragraph content. Markdown emphasis is allowed: **bold** and *italic*. "
+            "Paragraphs should have a maximum of 100 words and minimun 70 words. Line breaks can be created by adding \n."
+            "Do not include titles in this field; use the type 'ParagraphHeader' for titles, as using 'ParagraphBody' for titles will result in poorly formatted output. "
+            "If you need to create lists, use the type 'ParagraphListItem', as using 'ParagraphBody' for list items will result in poorly formatted output. "
+            "Similarly, do not use 'ParagraphBody' for equations; use the type 'Equation' instead to ensure proper formatting."
+        )
+    )
     #index_element: int = Field(..., description="Unique index across all document elements for global ordering in the document. Values must be unique integers starting from 1 or higher, and do not need to be consecutive.")
 
 def _fields_summary(model: type[BaseModel]) -> str:
@@ -106,10 +103,10 @@ elements_lit = Literal[
     "Table",
     "Image",
     "Equation"
-]
+] 
 class DocumentElement(BaseModel):
     # index_element: int = Field(..., description="Unique index across all document elements for global ordering in the document. Values must be unique integers starting from 1.")
-    type: elements_lit = Field(..., description="Use EXACTLY one of: ParagraphBody|ParagraphHeader|ParagraphListItem|Table|Image|Equation. Do NOT use: header_element, paragraph_element, list_element.")
+    type: elements_lit = Field(..., description="Specify exactly one of the following types: ParagraphBody, ParagraphHeader, ParagraphListItem, Table, Image, or Equation. Do not alter these literals, as it will cause backend failures.")
     
     paragraph: Optional[ParagraphBody] = Field(default=None, description=f"Use only when type='ParagraphBody'. Omit for any other type. {_fields_summary(ParagraphBody)}")
     header: Optional[ParagraphHeader] = Field(default=None, description=f"Use only when type='ParagraphHeader'. Omit for any other type. {_fields_summary(ParagraphHeader)}")

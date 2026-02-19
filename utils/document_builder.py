@@ -236,7 +236,7 @@ def build_docx_from_dict(doc_dict, buffer, request, URL):
             # Parse text for **bold** and *italic*
             segments = parse_markdown_text(item.get("text", ""))
             for seg in segments:
-                run = current_paragraph.add_run(seg['text'])
+                run = current_paragraph.add_run(seg['text'])  # Agregar salto de línea después de cada segmento para mantener formato
                 run.bold = seg['bold']
                 run.italic = seg['italic']
                 run.font.size = Inches(12 / 72)
