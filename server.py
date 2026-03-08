@@ -111,12 +111,6 @@ async def generate_markdown(
         logger.error(f"Error generating Markdown document: {e}")
         return dumps({"error": "An error occurred while generating the Markdown document."}, ensure_ascii=False)
 
-@mcp.tool(
-    name = "generate_word_structured",
-    title = "Generate Word",
-    description = WORD_TEMPLATE,
-    enabled=ENABLE_WORD_ELEMENT_FILLING
-)
 async def generate_word_structured(
     body: DocxBodyElements
 ):
@@ -135,12 +129,6 @@ async def generate_word_structured(
         logger.error(f"Error generating Word document: {e}")
         return dumps({"error": "An error occurred while generating the Word document."}, ensure_ascii=False)
 
-@mcp.tool(
-    name="generate_word",
-    title="Generate Word",
-    description=WORD_TEMPLATE,
-    enabled=not ENABLE_WORD_ELEMENT_FILLING
-)
 async def generate_word(
     python_script: Annotated[str, Field(description=ARGUMENT_DESCRIPTIONS["common_args"]["python_script"])],
     file_name: Annotated[str, Field(description=ARGUMENT_DESCRIPTIONS["common_args"]["file_name"])],
@@ -152,6 +140,27 @@ async def generate_word(
     # headers
     request = build_request_context()
     return _generate_word(python_script, file_name, images_list, request, OWUI_URL, ENABLE_CREATE_KNOWLEDGE)
+
+
+def register_word_tool() -> None:
+    if ENABLE_WORD_ELEMENT_FILLING:
+        mcp.tool(
+            name="generate_word_structured",
+            title="Generate Word",
+            description=WORD_TEMPLATE,
+        )(generate_word_structured)
+        logger.info("Registered Word tool: generate_word_structured")
+        return
+
+    mcp.tool(
+        name="generate_word",
+        title="Generate Word",
+        description=WORD_TEMPLATE,
+    )(generate_word)
+    logger.info("Registered Word tool: generate_word")
+
+
+register_word_tool()
 
 
 @mcp.tool(
